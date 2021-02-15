@@ -2,6 +2,8 @@ FROM openjdk:11-jre-buster
 
 RUN mkdir /usr/local/activemq
 
+ENV PATH /usr/local/activemq/bin:$PATH
+
 WORKDIR /usr/local/activemq
 
 ENV ACTIVEMQ_MAJOR 5.16
@@ -44,8 +46,9 @@ RUN set -eux; \
   rm activemq.tar.gz*; \
   mv apache-activemq-$ACTIVEMQ_VERSION/* .; \
   rmdir apache-activemq-$ACTIVEMQ_VERSION; \
+  sed -i 's/127.0.0.1/0.0.0.0/' conf/jetty.xml; \
   cd bin
 
-EXPOSE 8101 1099 44444 8181
+EXPOSE 8101 1099 44444 8181 8161
 
-#CMD ["activemq start", "run"]
+CMD ["activemq", "console"]
