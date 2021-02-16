@@ -6,8 +6,12 @@ ENV PATH /usr/local/activemq/bin:$PATH
 
 WORKDIR /usr/local/activemq
 
+RUN wget -O KEYS http://www.apache.org/dist/activemq/KEYS --progress=dot:giga; \
+  gpg --import KEYS
+
 ENV ACTIVEMQ_MAJOR 5.16
 ENV ACTIVEMQ_VERSION 5.16.1
+ENV ACTIVEMQ_SHA512 f98c9da5dafa2dc291070fecd57b7fccd0954cc8b2be09abc77ea66745b89283358297f308ec30dd47efd3e0c9d4cffc3821ef429f8f94d6c8971bbe933809b2
 
 RUN set -eux; \
   \
@@ -42,13 +46,16 @@ RUN set -eux; \
   }; \
   \
   ddist 'activemq.tar.gz' "activemq/$ACTIVEMQ_VERSION/apache-activemq-$ACTIVEMQ_VERSION-bin.tar.gz" "$ACTIVEMQ_VERSION/activemq-$ACTIVEMQ_VERSION-bin.tar.gz"; \
-  tar -xf activemq.tar.gz; \
-  rm activemq.tar.gz*; \
-  mv apache-activemq-$ACTIVEMQ_VERSION/* .; \
-  rmdir apache-activemq-$ACTIVEMQ_VERSION; \
-  sed -i 's/127.0.0.1/0.0.0.0/' conf/jetty.xml; \
-  cd bin
+  echo "$ACTIVEMQ_SHA512 *activemq.tar.gz" | sha512sum --strict --check -; \
+  ddist 'activemq.tar.gz.asc' "activemq/$ACTIVEMQ_VERSION/apache-activemq-$ACTIVEMQ_VERSION-bin.tar.gz.asc" "$ACTIVEMQ_VERSION/activemq-$ACTIVEMQ_VERSION.tar.gz.asc"; \
+  export GNUPGHOME="$(mktemp -d)"; \
+  wget -O KEYS http://www.apache.org/dist/activemq/KEYS --progress=dot:giga; \
+  gpg --import KEYS; \
+  gpg --verify activemq.tar.gz.asc activemq.tar.gz; \
+  tar -xf activemq.tar.gz --strip-components=1; \
+  rm -r activemq.tar.gz* KEYS /tmp/tmp*; \
+  sed -i 's/127.0.0.1/0.0.0.0/' conf/jetty.xml
 
 EXPOSE 8101 1099 44444 8181 8161
 
-CMD ["activemq", "console"]
+CMD ["./bin/activemq", "console"]
