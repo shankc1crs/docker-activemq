@@ -6,9 +6,9 @@ ENV PATH /usr/local/activemq/bin:$PATH
 
 WORKDIR /usr/local/activemq
 
-ENV ACTIVEMQ_MAJOR 5.16
-ENV ACTIVEMQ_VERSION 5.16.1
-ENV ACTIVEMQ_SHA512 f98c9da5dafa2dc291070fecd57b7fccd0954cc8b2be09abc77ea66745b89283358297f308ec30dd47efd3e0c9d4cffc3821ef429f8f94d6c8971bbe933809b2
+ENV ACTIVEMQ_MAJOR 2.17
+ENV ACTIVEMQ_VERSION 2.17.0
+ENV ACTIVEMQ_SHA512 1d0287d9c3b9c3f38d691174e9f64e98a9592987d6446bc05e5a13c35cb832a82ef1bebf278a98ccab0270e479ced4b2b93072e64bdf73b4a07a4a7091c2a25f
 
 RUN set -eux; \
   \
@@ -42,9 +42,9 @@ RUN set -eux; \
     [ -n "$success" ]; \
   }; \
   \
-  ddist 'activemq.tar.gz' "activemq/$ACTIVEMQ_VERSION/apache-activemq-$ACTIVEMQ_VERSION-bin.tar.gz" "$ACTIVEMQ_VERSION/apache-activemq-$ACTIVEMQ_VERSION-bin.tar.gz"; \
+  ddist 'activemq.tar.gz' "activemq/activemw-artemis/$ACTIVEMQ_VERSION/activemq-artemis-$ACTIVEMQ_VERSION-bin.tar.gz" "$ACTIVEMQ_VERSION/apache-activemq-$ACTIVEMQ_VERSION-bin.tar.gz"; \
   echo "$ACTIVEMQ_SHA512 *activemq.tar.gz" | sha512sum --strict --check -; \
-  ddist 'activemq.tar.gz.asc' "activemq/$ACTIVEMQ_VERSION/apache-activemq-$ACTIVEMQ_VERSION-bin.tar.gz.asc" "$ACTIVEMQ_VERSION/apache-activemq-$ACTIVEMQ_VERSION.tar.gz.asc"; \
+  ddist 'activemq.tar.gz.asc' "activemq/activemw-artemis/$ACTIVEMQ_VERSION/activemq-artemis--$ACTIVEMQ_VERSION-bin.tar.gz.asc" "$ACTIVEMQ_VERSION/apache-activemq-$ACTIVEMQ_VERSION.tar.gz.asc"; \
   export GNUPGHOME="$(mktemp -d)"; \
   wget -O KEYS http://www.apache.org/dist/activemq/KEYS --progress=dot:giga; \
   gpg --import KEYS; \
